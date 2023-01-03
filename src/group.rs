@@ -1,7 +1,6 @@
-// use serde::{Deserialize, Serialize};
-// use serde_json::Result;
+use serde::{Deserialize, Serialize};
 
-// #[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize)]
 pub struct Group {
 
 }
