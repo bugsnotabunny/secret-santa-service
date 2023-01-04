@@ -13,7 +13,7 @@ pub struct Data {
 }
 
 impl Data {
-    pub fn new() -> Self {
+    pub fn build() -> Self {
         Data {
             users: HashMap::new(),
             groups: HashMap::new()

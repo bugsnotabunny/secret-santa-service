@@ -75,17 +75,16 @@ pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
         RequestType::Get => handle_get_request(stream, data, &request_path),
         RequestType::Post => handle_post_request(stream, data, &request_path)
     }
-    return;
 }
 
-fn check_content_type(http_request: &Vec< String >) -> bool {
+fn check_content_type(http_request: &[String]) -> bool {
     let content_type_raw = http_request
         .iter()
         .find(|&s| s.starts_with("Content-Type: application/json"));
     content_type_raw.is_some()
 }
 
-fn check_content_len(http_request: &Vec< String >) -> bool {
+fn check_content_len(http_request: &[String]) -> bool {
     let content_len_str = http_request
         .iter()
         .find(|&s| s.starts_with("Content-Length: "));
@@ -117,7 +116,7 @@ fn check_content_len(http_request: &Vec< String >) -> bool {
     content_len <= MAX_CONTENT_LEN
 }
 
-fn split_request_line(http_request: &Vec< String >) -> Vec<&str> {
+fn split_request_line(http_request: &[String]) -> Vec<&str> {
     http_request
         .first()
         .unwrap()
@@ -125,7 +124,7 @@ fn split_request_line(http_request: &Vec< String >) -> Vec<&str> {
         .collect::<Vec<_>>()
 }
 
-fn check_http_standard(request_line_splited: &Vec< &str >) -> bool {
+fn check_http_standard(request_line_splited: &[&str]) -> bool {
     let http_standard = request_line_splited
         .last()
         .unwrap();
@@ -133,32 +132,26 @@ fn check_http_standard(request_line_splited: &Vec< &str >) -> bool {
     **http_standard == *"HTTP/1.1"
 }
 
-fn get_request_type(request_line_splited: &Vec< &str >) -> Result< RequestType, ()> {
+fn get_request_type(request_line_splited: &[&str]) -> Result< RequestType, ()> {
     let request_type = request_line_splited[0];
     RequestType::from_str(request_type)
 }
 
-fn get_request_path(request_line_splited: &Vec< &str >) -> Vec<String> {
+fn get_request_path(request_line_splited: &[&str]) -> Vec<String> {
     let request_path_preformated = request_line_splited[1..(request_line_splited.len()-1)]
         .join(" ");
     let request_path = request_path_preformated
         .split('/')
         .map(|s| s.to_string())
         .collect::<Vec<_>>();
-    return request_path;
+    request_path
 }
 
-fn login_user<'a>(http_request: &Vec< String >, data: &'a mut Data) -> Option< &'a mut User > {
+fn login_user<'a>(http_request: &[String], data: &'a mut Data) -> Option< &'a mut User > {
     let credentials_wrapped = http_request
         .iter()
         .find(|&s| s.starts_with("Authorization: basic "));
-
-    if credentials_wrapped.is_none() {
-        return None;
-    }
-
-    let credentials = credentials_wrapped.unwrap();
-
+    let credentials = credentials_wrapped?;
     return data.login(credentials);
 }
 
@@ -198,6 +191,6 @@ fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<String
     }
 }
 
-fn handle_post_request(stream: &TcpStream, data: &Data, request_path: &Vec<String>) {
+fn handle_post_request(stream: &TcpStream, data: &Data, request_path: &[String]) {
 
 }
