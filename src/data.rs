@@ -23,13 +23,13 @@ impl Data {
     pub fn get_users(&self) -> Vec< (&String, &User) > {
         let result = self.users.iter()
             .collect::< Vec<(&String, &User)> >();
-        return result;
+        result
     }
 
     pub fn get_groups(&self) -> Vec< (&String, & Group) > {
         let result = self.groups.iter()
             .collect::< Vec<(&String, &Group)> >();
-        return result;
+        result
     }
 
     pub fn get_user(&self, login: &String) -> Option< &User > {
