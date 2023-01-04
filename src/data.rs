@@ -23,13 +23,13 @@ impl Data {
     pub fn get_users(&self) -> Vec< (&String, &User) > {
         let result = self.users.iter()
             .collect::< Vec<(&String, &User)> >();
-        return result;
+        result
     }
 
     pub fn get_groups(&self) -> Vec< (&String, & Group) > {
         let result = self.groups.iter()
             .collect::< Vec<(&String, &Group)> >();
-        return result;
+        result
     }
 
     pub fn get_user(&self, login: &String) -> Option< &User > {
@@ -45,7 +45,7 @@ impl Data {
     // fn delete_group(...);
     // fn delete_user(...);
 
-    pub fn login(& mut self, credentials: &str) -> Option< &mut User > {
+    pub fn login(&mut self, credentials: &str) -> Option< &mut User > {
         let credentials_as_whole = credentials.split_whitespace().collect::<Vec<_>>();
         let login = credentials_as_whole[2];
         let password = credentials_as_whole[3];

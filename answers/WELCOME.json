@@ -1,0 +1,9 @@
+{
+    "message": "Welcome to our secret santa service! This file will explain you what to do!",
+    "possible_actions": [
+        {
+            "action": "/users",
+            "reaction": "Returns list of all existing users"
+        }
+    ]
+}
