@@ -13,7 +13,6 @@ use crate::{
 };
 
 pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
-
     let buf_reader = BufReader::new(&mut stream);
     let http_request = buf_reader
         .lines()
@@ -56,7 +55,7 @@ pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     }
 
     let request_path = get_request_path(&request_line_splited);
-    if request_path.len() < 1 { // GET /
+    if request_path.is_empty() { // GET /
         respond(stream, response::WELCOME_TXT);
         return;
     }
@@ -72,14 +71,9 @@ pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     }
 
     let request_type = request_type_wrapped.unwrap();
-
     match request_type {
         RequestType::Get => handle_get_request(stream, data, &request_path),
-
-        _ => respond(stream, &response::gen_response(
-            status::METHOD_NOT_ALLOWED,
-            fs::read_to_string(json_msg_path::UNSUPORTED_COMMAND).unwrap().as_str()
-        ))
+        RequestType::Post => handle_post_request(stream, data, &request_path)
     }
     return;
 }
@@ -202,4 +196,8 @@ fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<String
         let json_group = serde_json::to_string(&group).unwrap();
         respond(stream, response::gen_response(status::OK, json_group.as_str()).as_str());
     }
+}
+
+fn handle_post_request(stream: &TcpStream, data: &Data, request_path: &Vec<String>) {
+
 }
