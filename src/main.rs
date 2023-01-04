@@ -5,12 +5,16 @@ pub mod mucho_texto;
 
 use std::{
     io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream}
+    net::{TcpListener, TcpStream},
+    fs,
 };
 
-use crate::data::Data;
-use crate::mucho_texto::status;
-use crate::mucho_texto::response;
+use mucho_texto::json_msg_path;
+
+use crate::{
+    data::Data,
+    mucho_texto::{status, response}
+};
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -26,6 +30,8 @@ fn respond(mut stream: &TcpStream, response: &str) {
 }
 
 fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
+    static MAX_CONTENT_LEN: usize = 500;
+
     let buf_reader = BufReader::new(&mut stream);
     let http_request: Vec<_> = buf_reader
         .lines()
@@ -35,38 +41,52 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
 
     let content_type_raw = http_request
         .iter()
-        .find(|&s| s.starts_with("Content-Type: "));
+        .find(|&s| s.starts_with("Content-Type: application/json"));
 
     if content_type_raw.is_none() {
-        respond(stream, response::INVALID_CONTENT);
+        respond(stream, &response::gen_response(
+            status::METHOD_NOT_ALLOWED,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_TYPE).unwrap().as_str()
+        ));
         return;
     }
 
-    let content_type = content_type_raw.unwrap();
     let content_len_str = http_request
         .iter()
         .find(|&s| s.starts_with("Content-Length: "));
     if content_len_str.is_none() {
-        respond(stream, response::INVALID_CONTENT);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
     let content_len_raw = content_len_str.unwrap().split_whitespace().last();
     if content_len_raw.is_none() {
-        respond(stream, response::INVALID_CONTENT);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
     let content_len_wrapped = content_len_raw.unwrap().parse::< usize >();
     if content_len_raw.is_none() {
-        respond(stream, response::INVALID_CONTENT);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
     let content_len = content_len_wrapped.unwrap();
 
-    if !content_type.ends_with("application/json") || (content_len < 2) {
-        respond(stream, response::INVALID_CONTENT);
+    if content_len > MAX_CONTENT_LEN {
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
@@ -74,7 +94,10 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
         .iter()
         .find(|&s| s.starts_with("Authorization: basic "));
     if credentials_wrapped.is_none() {
-        respond(stream, response::INVALID_CREDENTIALS);
+        respond(stream, &response::gen_response(
+            status::ANAUTHORIZED,
+            fs::read_to_string(json_msg_path::INVALID_CREDENTIALS).unwrap().as_str()
+        ));
         return;
     }
 
@@ -82,7 +105,10 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
 
     let user = data.login(credentials);
     if user.is_none() {
-        respond(stream, response::INVALID_CREDENTIALS);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
@@ -91,7 +117,10 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     let http_standard = request_line_splited.last().unwrap();
 
     if **http_standard != *"HTTP/1.1" {
-        respond(stream, response::UNSUPORTED_STANDARD);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
         return;
     }
 
@@ -100,7 +129,7 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     let request_path_preformated = request_line_splited[1..(request_line_splited.len()-1)]
         .join(" ");
     let request_path = request_path_preformated
-        .split("/")
+        .split('/')
         .collect::<Vec<_>>();
 
     if request_path.len() < 1 { // GET /
@@ -113,7 +142,10 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     } else if *type_enum == *"POST" {
 
     } else {
-        respond(stream, response::UNSUPORTED_STANDARD);
+        respond(stream, &response::gen_response(
+            status::PAYLOAD_TOO_LARGE,
+            fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH).unwrap().as_str()
+        ));
     }
 }
 

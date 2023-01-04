@@ -4,21 +4,25 @@ pub mod status {
     pub static NOT_FOUND: &str = "HTTP/1.1 404 Not Found";
     pub static ANAUTHORIZED: &str = "HTTP/1.1 401 Unauthorized";
     pub static OK: &str = "HTTP/1.1 200 OK";
+    pub static NO_CONTENT: &str = "HTTP/1.1 204 No Content";
+}
+
+
+
+pub mod json_msg_path {
+    pub static INVALID_CONTENT_LENGTH: &str = "/home/banan/INVALID_CONTENT_LENGTH.json";
+    pub static INVALID_CONTENT_TYPE: &str = "/home/banan/INVALID_CONTENT_TYPE.json";
+    pub static INVALID_CREDENTIALS: &str = "/home/banan/INVALID_CREDENTIALS.json";
+    pub static NO_CONTENT: &str = "/home/banan/NO_CONTENT.json";
 }
 
 pub mod response {
-    use super::status;
-
-    pub static INVALID_CONTENT: &str = status::NOT_FOUND;
-    pub static INVALID_CREDENTIALS: &str = status::ANAUTHORIZED;
-    pub static UNSUPORTED_STANDARD: &str = status::METHOD_NOT_ALLOWED;
-    pub static UNSUPORTED_REQUEST: &str = status::METHOD_NOT_ALLOWED;
-    pub static WELCOME_TXT: &str = WELCOME_MESSAGE;
+    pub static WELCOME_TXT: &str = "WELCOME_MESSAGE"; //as json
 
     pub fn gen_response(status: &str, json_message: &str) -> String {
         let len = json_message.len();
-        format!("{status}\r\nContent-Lenqgth: {len}\r\n\r\n{json_message}")
+        format!("{status}\r\n{DEFAULT_RESPONSE_HEADERS}{len}\r\n\r\n{json_message}")
     }
 
-    static WELCOME_MESSAGE: &str = ""; // must be in json format
+    static DEFAULT_RESPONSE_HEADERS: &str = "Content-Type: application/json\r\nContent-Length: ";
 }
