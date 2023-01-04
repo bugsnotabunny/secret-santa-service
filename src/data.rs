@@ -13,21 +13,21 @@ pub struct Data {
 }
 
 impl Data {
-    pub fn build() -> Data {
-        return Data {
+    pub fn new() -> Self {
+        Data {
             users: HashMap::new(),
-            groups:HashMap::new()
-        };
+            groups: HashMap::new()
+        }
     }
 
     pub fn get_users(&self) -> Vec< (&String, &User) > {
-        let mut result = self.users.iter()
+        let result = self.users.iter()
             .collect::< Vec<(&String, &User)> >();
         return result;
     }
 
     pub fn get_groups(&self) -> Vec< (&String, & Group) > {
-        let mut result = self.groups.iter()
+        let result = self.groups.iter()
             .collect::< Vec<(&String, &Group)> >();
         return result;
     }
@@ -45,14 +45,14 @@ impl Data {
     // fn delete_group(...);
     // fn delete_user(...);
 
-    pub fn login(&self, credentials: &String) -> Option< &mut User > {
+    pub fn login(& mut self, credentials: &str) -> Option< &mut User > {
         let credentials_as_whole = credentials.split_whitespace().collect::<Vec<_>>();
         let login = credentials_as_whole[2];
         let password = credentials_as_whole[3];
-        let user = self.users.get_mut(login);
-        if user.is_none() || (user.unwrap().get_password() == password) {
-            return user;
+        let user_wrapped = self.users.get_mut(login);
+        match user_wrapped {
+            Some(user) => if user.get_password() == password {Some(user)} else {None},
+            None => None
         }
-        return None;
     }
 }
