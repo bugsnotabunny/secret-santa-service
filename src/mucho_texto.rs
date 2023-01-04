@@ -7,8 +7,6 @@ pub mod status {
     pub static NO_CONTENT: &str = "HTTP/1.1 204 No Content";
 }
 
-
-
 pub mod json_msg_path {
     pub static INVALID_CONTENT_LENGTH: &str = "answers/INVALID_CONTENT_LENGTH.json";
     pub static INVALID_CONTENT_TYPE: &str = "answers/INVALID_CONTENT_TYPE.json";

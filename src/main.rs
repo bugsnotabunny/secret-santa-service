@@ -1,18 +1,13 @@
-pub mod group;
-pub mod user;
 pub mod data;
+pub mod group;
 pub mod mucho_texto;
 pub mod request_handler;
 pub mod request_type;
+pub mod user;
 
-use std::{
-    net::{TcpListener}
-};
+use std::net::TcpListener;
 
-use crate::{
-    data::Data,
-    request_handler::handle_connection
-};
+use crate::{data::Data, request_handler::handle_connection};
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -22,4 +17,3 @@ fn main() {
         handle_connection(&stream, &mut data);
     }
 }
-

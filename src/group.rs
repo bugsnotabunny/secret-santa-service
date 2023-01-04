@@ -1,10 +1,6 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]
-pub struct Group {
+pub struct Group {}
 
-}
-
-impl Group {
-
-}
+impl Group {}

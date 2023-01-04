@@ -1,42 +1,36 @@
-use std::{
-    vec::Vec,
-    collections::HashMap,
-    option::Option,
-};
+use std::{collections::HashMap, option::Option, vec::Vec};
 
 use crate::group::Group;
 use crate::user::User;
 
 pub struct Data {
-    users: HashMap< String, User >,
-    groups: HashMap< String, Group >
+    users: HashMap<String, User>,
+    groups: HashMap<String, Group>,
 }
 
 impl Data {
     pub fn build() -> Self {
         Data {
             users: HashMap::new(),
-            groups: HashMap::new()
+            groups: HashMap::new(),
         }
     }
 
-    pub fn get_users(&self) -> Vec< (&String, &User) > {
-        let result = self.users.iter()
-            .collect::< Vec<(&String, &User)> >();
+    pub fn get_users(&self) -> Vec<(&String, &User)> {
+        let result = self.users.iter().collect::<Vec<(&String, &User)>>();
         result
     }
 
-    pub fn get_groups(&self) -> Vec< (&String, & Group) > {
-        let result = self.groups.iter()
-            .collect::< Vec<(&String, &Group)> >();
+    pub fn get_groups(&self) -> Vec<(&String, &Group)> {
+        let result = self.groups.iter().collect::<Vec<(&String, &Group)>>();
         result
     }
 
-    pub fn get_user(&self, login: &String) -> Option< &User > {
+    pub fn get_user(&self, login: &String) -> Option<&User> {
         return self.users.get(login);
     }
 
-    pub fn get_group(&self, id: &String) -> Option< &Group > {
+    pub fn get_group(&self, id: &String) -> Option<&Group> {
         return self.groups.get(id);
     }
 
@@ -45,14 +39,20 @@ impl Data {
     // fn delete_group(...);
     // fn delete_user(...);
 
-    pub fn login(&mut self, credentials: &str) -> Option< &mut User > {
+    pub fn login(&mut self, credentials: &str) -> Option<&mut User> {
         let credentials_as_whole = credentials.split_whitespace().collect::<Vec<_>>();
         let login = credentials_as_whole[2];
         let password = credentials_as_whole[3];
         let user_wrapped = self.users.get_mut(login);
         match user_wrapped {
-            Some(user) => if user.get_password() == password {Some(user)} else {None},
-            None => None
+            Some(user) => {
+                if user.get_password() == password {
+                    Some(user)
+                } else {
+                    None
+                }
+            }
+            None => None,
         }
     }
 }
