@@ -9,11 +9,9 @@ use std::{
     fs,
 };
 
-use mucho_texto::json_msg_path;
-
 use crate::{
     data::Data,
-    mucho_texto::{status, response}
+    mucho_texto::{status, response, json_msg_path}
 };
 
 fn main() {
