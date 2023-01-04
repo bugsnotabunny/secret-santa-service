@@ -14,6 +14,8 @@ pub mod json_msg_path {
     pub static INVALID_CONTENT_TYPE: &str = "answers/INVALID_CONTENT_TYPE.json";
     pub static INVALID_CREDENTIALS: &str = "answers/INVALID_CREDENTIALS.json";
     pub static NO_CONTENT: &str = "answers/NO_CONTENT.json";
+    pub static UNSUPORTED_STANDARD: &str = "answers/UNSUPORTED_STANDARD.json";
+    pub static UNSUPORTED_COMMAND: &str = "answers/UNSUPORTED_COMMAND.json";
 }
 
 pub mod response {

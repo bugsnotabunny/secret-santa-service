@@ -45,7 +45,7 @@ impl Data {
     // fn delete_group(...);
     // fn delete_user(...);
 
-    pub fn login(& mut self, credentials: &str) -> Option< &mut User > {
+    pub fn login(&mut self, credentials: &str) -> Option< &mut User > {
         let credentials_as_whole = credentials.split_whitespace().collect::<Vec<_>>();
         let login = credentials_as_whole[2];
         let password = credentials_as_whole[3];
