@@ -10,10 +10,10 @@ pub mod status {
 
 
 pub mod json_msg_path {
-    pub static INVALID_CONTENT_LENGTH: &str = "/home/banan/INVALID_CONTENT_LENGTH.json";
-    pub static INVALID_CONTENT_TYPE: &str = "/home/banan/INVALID_CONTENT_TYPE.json";
-    pub static INVALID_CREDENTIALS: &str = "/home/banan/INVALID_CREDENTIALS.json";
-    pub static NO_CONTENT: &str = "/home/banan/NO_CONTENT.json";
+    pub static INVALID_CONTENT_LENGTH: &str = "INVALID_CONTENT_LENGTH.json";
+    pub static INVALID_CONTENT_TYPE: &str = "INVALID_CONTENT_TYPE.json";
+    pub static INVALID_CREDENTIALS: &str = "INVALID_CREDENTIALS.json";
+    pub static NO_CONTENT: &str = "NO_CONTENT.json";
 }
 
 pub mod response {
