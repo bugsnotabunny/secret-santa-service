@@ -7,6 +7,6 @@ pub struct User {
 
 impl User {
     pub fn get_password(&self) -> &String {
-        return &self.password;
+        &self.password
     }
 }
