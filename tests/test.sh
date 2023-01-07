@@ -1,17 +1,18 @@
 #!/bin/bash
 
 ADRESS="127.0.0.1:7878"
-CONTENT_TYPE="Content-Type: application/json"
 
-# expected error - no attachment type
+echo "expected welcome message; got:"
 curl $ADRESS
-# expected error - unsuported type
-curl -H "Content-Type: some-type-lol" $ADRESS
-# expected error - no content len specified
-curl -H "$CONTENT_TYPE" $ADRESS
-# expected error - too long content
-curl -H "$CONTENT_TYPE" -F "data=@tests/long_content.txt" $ADRESS
-# expected error - no credentials provided
-curl -H "$CONTENT_TYPE" -d "{}" $ADRESS
-# expected error - wrong password
-curl -H "Authorization: basic katkek password" -H "$CONTENT_TYPE" -d "{}" $ADRESS
+echo
+
+echo "expected 2 empty lists; got:"
+curl $ADRESS/users
+curl $ADRESS/groups
+echo
+
+echo "expected 3 404 messages; got:"
+curl $ADRESS/g
+curl $ADRESS/groups/a
+curl $ADRESS/users/a
+echo
