@@ -26,5 +26,3 @@ pub mod response {
 
     static DEFAULT_RESPONSE_HEADERS: &str = "Content-Type: application/json\r\nContent-Length: ";
 }
-
-

@@ -6,13 +6,10 @@ use std::{
 
 use crate::{
     data::Data,
+    mucho_texto::{response, status},
     request_type::RequestType,
-    user::User,
     respond::*,
-    mucho_texto::{
-        status,
-        response
-    }
+    user::User,
 };
 
 pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
@@ -88,11 +85,7 @@ fn login_user<'a>(http_request: &[String], data: &'a mut Data) -> Option<&'a mut
     data.login(credentials)
 }
 
-fn handle_get_request(
-    stream: &TcpStream,
-    data: &mut Data,
-    request_path: &Vec<String>,
-) {
+fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &Vec<String>) {
     if request_path[0] == "users" {
         if request_path.len() < 2 {
             let users = data.get_users();
@@ -141,7 +134,7 @@ fn handle_delete_request(
     stream: &TcpStream,
     data: &mut Data,
     request_path: &[String],
-    http_request: &[String]
+    http_request: &[String],
 ) {
     let user = login_user(http_request, data);
     if user.is_none() {
@@ -154,9 +147,13 @@ fn handle_delete_request(
         return;
     }
 
-    let was_deleted = if request_path[0] == "users" {data.delete_user(&request_path[1])}
-    else if request_path[0] == "groups" {data.delete_group(&request_path[2])}
-    else {false};
+    let was_deleted = if request_path[0] == "users" {
+        data.delete_user(&request_path[1])
+    } else if request_path[0] == "groups" {
+        data.delete_group(&request_path[2])
+    } else {
+        false
+    };
 
     if was_deleted {
         respond_deleted_successfully(stream)

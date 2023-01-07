@@ -1,15 +1,11 @@
-use std::{
-    fs,
-    net::TcpStream,
-    io::prelude::*,
-};
 use crate::mucho_texto::*;
+use std::{fs, io::prelude::*, net::TcpStream};
 
 pub fn respond(mut stream: &TcpStream, response: &str) {
     stream.write_all(response.as_bytes()).unwrap();
 }
 
-pub fn respond_not_allowed (stream: &TcpStream) {
+pub fn respond_not_allowed(stream: &TcpStream) {
     respond(
         stream,
         &response::gen_response(
@@ -17,7 +13,7 @@ pub fn respond_not_allowed (stream: &TcpStream) {
             fs::read_to_string(json_msg_path::UNSUPORTED_STANDARD)
                 .unwrap()
                 .as_str(),
-        )
+        ),
     )
 }
 
@@ -26,10 +22,8 @@ pub fn respond_welcome(stream: &TcpStream) {
         stream,
         &response::gen_response(
             status::OK,
-            fs::read_to_string(json_msg_path::WELCOME)
-                .unwrap()
-                .as_str()
-        )
+            fs::read_to_string(json_msg_path::WELCOME).unwrap().as_str(),
+        ),
     )
 }
 
@@ -41,7 +35,7 @@ pub fn respond_unsuported_standard(stream: &TcpStream) {
             fs::read_to_string(json_msg_path::UNSUPORTED_STANDARD)
                 .unwrap()
                 .as_str(),
-        )
+        ),
     )
 }
 
@@ -53,7 +47,7 @@ pub fn respond_unsuported_command(stream: &TcpStream) {
             fs::read_to_string(json_msg_path::UNSUPORTED_COMMAND)
                 .unwrap()
                 .as_str(),
-        )
+        ),
     )
 }
 
@@ -84,9 +78,6 @@ pub fn respond_invalid_credentials(stream: &TcpStream) {
 pub fn respond_deleted_successfully(stream: &TcpStream) {
     respond(
         stream,
-        &response::gen_response(
-            status::OK,
-            json_msg_path::DELETED_SUCCESSFULLY
-        )
+        &response::gen_response(status::OK, json_msg_path::DELETED_SUCCESSFULLY),
     )
 }

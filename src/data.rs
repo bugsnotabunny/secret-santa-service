@@ -37,14 +37,12 @@ impl Data {
     // fn create_group(...);
     // fn register_user(...);
 
-    pub fn delete_group(&mut self, id: &str) -> bool
-    {
+    pub fn delete_group(&mut self, id: &str) -> bool {
         let maybe_group = self.groups.remove(id);
         maybe_group.is_some()
     }
 
-    pub fn delete_user(&mut self, id: &str) -> bool
-    {
+    pub fn delete_user(&mut self, id: &str) -> bool {
         let maybe_user = self.groups.remove(id);
         maybe_user.is_some()
     }
