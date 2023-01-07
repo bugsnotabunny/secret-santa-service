@@ -36,23 +36,24 @@ impl Data {
 
     // fn create_group(...);
     // fn register_user(...);
-    // fn delete_group(...);
-    // fn delete_user(...);
+
+    pub fn delete_group(&mut self, id: &str) -> bool
+    {
+        let maybe_group = self.groups.remove(id);
+        maybe_group.is_some()
+    }
+
+    pub fn delete_user(&mut self, id: &str) -> bool
+    {
+        let maybe_user = self.groups.remove(id);
+        maybe_user.is_some()
+    }
 
     pub fn login(&mut self, credentials: &str) -> Option<&mut User> {
         let credentials_as_whole = credentials.split_whitespace().collect::<Vec<_>>();
         let login = credentials_as_whole[2];
         let password = credentials_as_whole[3];
         let user_wrapped = self.users.get_mut(login);
-        match user_wrapped {
-            Some(user) => {
-                if user.get_password() == password {
-                    Some(user)
-                } else {
-                    None
-                }
-            }
-            None => None,
-        }
+        user_wrapped.filter(|u| u.get_password() == password)
     }
 }
