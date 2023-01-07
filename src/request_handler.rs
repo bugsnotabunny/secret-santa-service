@@ -1,11 +1,19 @@
 use std::{
-    fs,
     io::{prelude::*, BufReader},
     net::TcpStream,
     str::FromStr,
 };
 
-use crate::{data::Data, mucho_texto::*, request_type::RequestType, user::User};
+use crate::{
+    data::Data,
+    request_type::RequestType,
+    user::User,
+    respond::*,
+    mucho_texto::{
+        status,
+        response
+    }
+};
 
 pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     let buf_reader = BufReader::new(&mut stream);
@@ -15,121 +23,31 @@ pub fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
         .take_while(|line| !line.is_empty())
         .collect::<Vec<_>>();
 
-    if !check_content_type(&http_request) {
-        respond(
-            stream,
-            &response::gen_response(
-                status::METHOD_NOT_ALLOWED,
-                fs::read_to_string(json_msg_path::INVALID_CONTENT_TYPE)
-                    .unwrap()
-                    .as_str(),
-            ),
-        );
-        return;
-    }
-
-    if !check_content_len(&http_request) {
-        respond(
-            stream,
-            &response::gen_response(
-                status::PAYLOAD_TOO_LARGE,
-                fs::read_to_string(json_msg_path::INVALID_CONTENT_LENGTH)
-                    .unwrap()
-                    .as_str(),
-            ),
-        );
-        return;
-    }
-
-    let user = login_user(&http_request, data);
-    if user.is_none() {
-        respond(
-            stream,
-            &response::gen_response(
-                status::ANAUTHORIZED,
-                fs::read_to_string(json_msg_path::INVALID_CREDENTIALS)
-                    .unwrap()
-                    .as_str(),
-            ),
-        );
-        return;
-    }
-
     let request_line_splited = split_request_line(&http_request);
     if !check_http_standard(&request_line_splited) {
-        respond(
-            stream,
-            &response::gen_response(
-                status::METHOD_NOT_ALLOWED,
-                fs::read_to_string(json_msg_path::UNSUPORTED_STANDARD)
-                    .unwrap()
-                    .as_str(),
-            ),
-        );
+        respond_unsuported_standard(stream);
         return;
     }
 
     let request_path = get_request_path(&request_line_splited);
     if request_path.is_empty() {
         // GET /
-        respond(stream, response::WELCOME_TXT);
+        respond_welcome(stream);
         return;
     }
 
     let request_type_wrapped = get_request_type(&request_line_splited);
-
     if request_type_wrapped.is_err() {
-        respond(
-            stream,
-            &response::gen_response(
-                status::METHOD_NOT_ALLOWED,
-                fs::read_to_string(json_msg_path::UNSUPORTED_COMMAND)
-                    .unwrap()
-                    .as_str(),
-            ),
-        );
+        respond_unsuported_command(stream);
         return;
     }
 
     let request_type = request_type_wrapped.unwrap();
     match request_type {
         RequestType::Get => handle_get_request(stream, data, &request_path),
-        RequestType::Post => handle_post_request(stream, data, &request_path),
+        RequestType::Post => handle_post_request(),
+        RequestType::Delete => handle_delete_request(stream, data, &request_path, &http_request),
     }
-}
-
-fn check_content_type(http_request: &[String]) -> bool {
-    let content_type_raw = http_request
-        .iter()
-        .find(|&s| s.starts_with("Content-Type: application/json"));
-    content_type_raw.is_some()
-}
-
-fn check_content_len(http_request: &[String]) -> bool {
-    let content_len_str = http_request
-        .iter()
-        .find(|&s| s.starts_with("Content-Length: "));
-
-    if content_len_str.is_none() {
-        return false;
-    }
-
-    let content_len_raw = content_len_str.unwrap().split_whitespace().last();
-
-    if content_len_raw.is_none() {
-        return false;
-    }
-
-    let content_len_wrapped = content_len_raw.unwrap().parse::<usize>();
-
-    if content_len_wrapped.is_err() {
-        return false;
-    }
-
-    static MAX_CONTENT_LEN: usize = 500;
-    let content_len = content_len_wrapped.unwrap();
-
-    content_len <= MAX_CONTENT_LEN
 }
 
 fn split_request_line(http_request: &[String]) -> Vec<&str> {
@@ -157,6 +75,7 @@ fn get_request_path(request_line_splited: &[&str]) -> Vec<String> {
     let request_path = request_path_preformated
         .split('/')
         .map(|s| s.to_string())
+        .filter(|s| !s.is_empty())
         .collect::<Vec<_>>();
     request_path
 }
@@ -166,14 +85,14 @@ fn login_user<'a>(http_request: &[String], data: &'a mut Data) -> Option<&'a mut
         .iter()
         .find(|&s| s.starts_with("Authorization: basic "));
     let credentials = credentials_wrapped?;
-    return data.login(credentials);
+    data.login(credentials)
 }
 
-fn respond(mut stream: &TcpStream, response: &str) {
-    stream.write_all(response.as_bytes()).unwrap();
-}
-
-fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<String>) {
+fn handle_get_request(
+    stream: &TcpStream,
+    data: &mut Data,
+    request_path: &Vec<String>,
+) {
     if request_path[0] == "users" {
         if request_path.len() < 2 {
             let users = data.get_users();
@@ -184,19 +103,15 @@ fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<String
             );
             return;
         }
+
         let user = data.get_user(&request_path[1].to_string());
-        if user.is_none() {
+        if user.is_some() {
+            let json_user = serde_json::to_string(user.unwrap()).unwrap();
             respond(
                 stream,
-                response::gen_response(status::NOT_FOUND, "").as_str(),
+                response::gen_response(status::OK, json_user.as_str()).as_str(),
             );
-            return;
         }
-        let json_user = serde_json::to_string(user.unwrap()).unwrap();
-        respond(
-            stream,
-            response::gen_response(status::OK, json_user.as_str()).as_str(),
-        );
     } else if request_path[0] == "groups" {
         if request_path.len() < 2 {
             let groups = data.get_groups();
@@ -207,20 +122,61 @@ fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<String
             );
             return;
         }
+
         let group = data.get_group(&request_path[1].to_string());
-        if group.is_none() {
+        if group.is_some() {
+            let json_group = serde_json::to_string(&group).unwrap();
             respond(
                 stream,
-                response::gen_response(status::NOT_FOUND, "").as_str(),
+                response::gen_response(status::OK, json_group.as_str()).as_str(),
             );
-            return;
         }
-        let json_group = serde_json::to_string(&group).unwrap();
-        respond(
-            stream,
-            response::gen_response(status::OK, json_group.as_str()).as_str(),
-        );
     }
+    respond_not_found(stream)
 }
 
-fn handle_post_request(stream: &TcpStream, data: &Data, request_path: &[String]) {}
+fn handle_post_request() {}
+
+fn handle_delete_request(
+    stream: &TcpStream,
+    data: &mut Data,
+    request_path: &[String],
+    http_request: &[String]
+) {
+    let user = login_user(http_request, data);
+    if user.is_none() {
+        respond_invalid_credentials(stream);
+        return;
+    }
+
+    if request_path[0] == "users" {
+        if request_path.len() < 2 {
+            respond_unsuported_command(stream);
+        }
+
+        let was_deleted = data.delete_user(&request_path[1]);
+        if was_deleted {
+            respond_deleted_successfully(stream);
+            return;
+        }
+    } else if request_path[0] == "groups" {
+        if request_path.len() < 2 {
+            respond_unsuported_command(stream);
+            return;
+        }
+
+        let group = data.get_group(&request_path[1].to_string());
+        if group.is_none() {
+            respond_not_found(stream);
+            return;
+        }
+
+        let was_deleted = data.delete_group(&request_path[2]);
+        if was_deleted {
+            respond_deleted_successfully(stream);
+            return;
+        }
+    }
+
+    respond_not_found(stream);
+}

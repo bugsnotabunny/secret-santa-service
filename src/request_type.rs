@@ -4,6 +4,7 @@ use std::str::FromStr;
 pub enum RequestType {
     Get,
     Post,
+    Delete,
 }
 
 impl FromStr for RequestType {
@@ -12,6 +13,7 @@ impl FromStr for RequestType {
         match input {
             "GET" => Ok(RequestType::Get),
             "POST" => Ok(RequestType::Post),
+            "DELETE" => Ok(RequestType::Delete),
             _ => Err(()),
         }
     }
