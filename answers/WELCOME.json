@@ -2,8 +2,32 @@
     "message": "Welcome to our secret santa service! This file will explain you what to do!",
     "possible_actions": [
         {
-            "action": "/users",
+            "action": "ANY /",
+            "reaction": "Displays this text"
+        },
+        {
+            "action": "GET /users",
             "reaction": "Returns list of all existing users"
-        }
+        },
+        {
+            "action": "GET /groups",
+            "reaction": "Returns list of all existing groups"
+        },
+        {
+            "action": "GET /users/id",
+            "reaction": "Returns information about selected user"
+        },
+        {
+            "action": "GET /groups/id",
+            "reaction": "Returns information about selected group"
+        },
+        {
+            "action": "DELETE /users/id",
+            "reaction": "Deletes selected user (you can only delete user you are logged in as)"
+        },
+        {
+            "action": "DELETE /groups/id",
+            "reaction": "Deletes selected group (you can only delete groups you are admin at)"
+        },
     ]
 }
