@@ -9,12 +9,12 @@ pub struct User {
 
 impl User {
     pub fn get_login(&self) -> &String {
-        return &self.login;
+        &self.login
     }
     pub fn get_password(&self) -> &String {
-        return &self.password;
+        &self.password
     }
     pub fn get_nickname(&self) -> &String {
-        return &self.nickname;
+        &self.nickname
     }
 }
