@@ -1,16 +1,16 @@
-pub mod group;
-pub mod user;
 pub mod data;
+pub mod group;
 pub mod mucho_texto;
+pub mod user;
 
 use std::{
     io::{prelude::*, BufReader},
-    net::{TcpListener, TcpStream}
+    net::{TcpListener, TcpStream},
 };
 
 use crate::data::Data;
-use crate::mucho_texto::status;
 use crate::mucho_texto::response;
+use crate::mucho_texto::status;
 
 fn main() {
     let listener = TcpListener::bind("127.0.0.1:7878").unwrap();
@@ -57,7 +57,7 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
         return;
     }
 
-    let content_len_wrapped = content_len_raw.unwrap().parse::< usize >();
+    let content_len_wrapped = content_len_raw.unwrap().parse::<usize>();
     if content_len_raw.is_none() {
         respond(stream, response::INVALID_CONTENT);
         return;
@@ -86,7 +86,11 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
         return;
     }
 
-    let request_line_splited = http_request.first().unwrap().split_whitespace().collect::<Vec<_>>();
+    let request_line_splited = http_request
+        .first()
+        .unwrap()
+        .split_whitespace()
+        .collect::<Vec<_>>();
 
     let http_standard = request_line_splited.last().unwrap();
 
@@ -97,13 +101,12 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
 
     let type_enum = request_line_splited[0];
 
-    let request_path_preformated = request_line_splited[1..(request_line_splited.len()-1)]
-        .join(" ");
-    let request_path = request_path_preformated
-        .split("/")
-        .collect::<Vec<_>>();
+    let request_path_preformated =
+        request_line_splited[1..(request_line_splited.len() - 1)].join(" ");
+    let request_path = request_path_preformated.split("/").collect::<Vec<_>>();
 
-    if request_path.len() < 1 { // GET /
+    if request_path.len() < 1 {
+        // GET /
         respond(stream, response::WELCOME_TXT);
         return;
     }
@@ -111,7 +114,6 @@ fn handle_connection(mut stream: &TcpStream, data: &mut Data) {
     if *type_enum == *"GET" {
         handle_get_request(stream, data, &request_path)
     } else if *type_enum == *"POST" {
-
     } else {
         respond(stream, response::UNSUPORTED_STANDARD);
     }
@@ -122,29 +124,47 @@ fn handle_get_request(stream: &TcpStream, data: &Data, request_path: &Vec<&str>)
         if request_path.len() < 2 {
             let users = data.get_users();
             let json_users = serde_json::to_string(&users).unwrap();
-            respond(stream, response::gen_response(status::OK, json_users.as_str()).as_str());
+            respond(
+                stream,
+                response::gen_response(status::OK, json_users.as_str()).as_str(),
+            );
             return;
         }
         let user = data.get_user(&request_path[1].to_string());
         if user.is_none() {
-            respond(stream, response::gen_response(status::NOT_FOUND, "").as_str());
+            respond(
+                stream,
+                response::gen_response(status::NOT_FOUND, "").as_str(),
+            );
             return;
         }
         let json_user = serde_json::to_string(user.unwrap()).unwrap();
-        respond(stream, response::gen_response(status::OK, json_user.as_str()).as_str());
+        respond(
+            stream,
+            response::gen_response(status::OK, json_user.as_str()).as_str(),
+        );
     } else if request_path[0] == "groups" {
         if request_path.len() < 2 {
             let groups = data.get_groups();
             let json_groups = serde_json::to_string(&groups).unwrap();
-            respond(stream, response::gen_response(status::OK, json_groups.as_str()).as_str());
+            respond(
+                stream,
+                response::gen_response(status::OK, json_groups.as_str()).as_str(),
+            );
             return;
         }
         let group = data.get_group(&request_path[1].to_string());
         if group.is_none() {
-            respond(stream, response::gen_response(status::NOT_FOUND, "").as_str());
+            respond(
+                stream,
+                response::gen_response(status::NOT_FOUND, "").as_str(),
+            );
             return;
         }
         let json_group = serde_json::to_string(&group).unwrap();
-        respond(stream, response::gen_response(status::OK, json_group.as_str()).as_str());
+        respond(
+            stream,
+            response::gen_response(status::OK, json_group.as_str()).as_str(),
+        );
     }
 }
