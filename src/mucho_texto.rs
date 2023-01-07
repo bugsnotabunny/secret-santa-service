@@ -14,11 +14,11 @@ pub mod json_msg_path {
     pub static NO_CONTENT: &str = "answers/NO_CONTENT.json";
     pub static UNSUPORTED_STANDARD: &str = "answers/UNSUPORTED_STANDARD.json";
     pub static UNSUPORTED_COMMAND: &str = "answers/UNSUPORTED_COMMAND.json";
+    pub static DELETED_SUCCESSFULLY: &str = "answers/DELETED_SUCCESSFULLY.json";
+    pub static WELCOME: &str = "answers/WELCOME.json";
 }
 
 pub mod response {
-    pub static WELCOME_TXT: &str = "WELCOME_MESSAGE"; //as json
-
     pub fn gen_response(status: &str, json_message: &str) -> String {
         let len = json_message.len();
         format!("{status}\r\n{DEFAULT_RESPONSE_HEADERS}{len}\r\n\r\n{json_message}")
@@ -26,3 +26,5 @@ pub mod response {
 
     static DEFAULT_RESPONSE_HEADERS: &str = "Content-Type: application/json\r\nContent-Length: ";
 }
+
+

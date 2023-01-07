@@ -4,6 +4,7 @@ pub mod mucho_texto;
 pub mod request_handler;
 pub mod request_type;
 pub mod user;
+pub mod respond;
 
 use std::net::TcpListener;
 
