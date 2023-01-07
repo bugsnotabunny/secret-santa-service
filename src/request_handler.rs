@@ -104,9 +104,9 @@ fn handle_get_request(
             return;
         }
 
-        let user = data.get_user(&request_path[1].to_string());
-        if user.is_some() {
-            let json_user = serde_json::to_string(user.unwrap()).unwrap();
+        let user_wrapped = data.get_user(&request_path[1].to_string());
+        if let Some(user) = user_wrapped {
+            let json_user = serde_json::to_string(user).unwrap();
             respond(
                 stream,
                 response::gen_response(status::OK, json_user.as_str()).as_str(),
@@ -123,9 +123,9 @@ fn handle_get_request(
             return;
         }
 
-        let group = data.get_group(&request_path[1].to_string());
-        if group.is_some() {
-            let json_group = serde_json::to_string(&group).unwrap();
+        let group_wrapped = data.get_group(&request_path[1].to_string());
+        if let Some(user) = group_wrapped {
+            let json_group = serde_json::to_string(user).unwrap();
             respond(
                 stream,
                 response::gen_response(status::OK, json_group.as_str()).as_str(),
@@ -149,34 +149,18 @@ fn handle_delete_request(
         return;
     }
 
-    if request_path[0] == "users" {
-        if request_path.len() < 2 {
-            respond_unsuported_command(stream);
-        }
-
-        let was_deleted = data.delete_user(&request_path[1]);
-        if was_deleted {
-            respond_deleted_successfully(stream);
-            return;
-        }
-    } else if request_path[0] == "groups" {
-        if request_path.len() < 2 {
-            respond_unsuported_command(stream);
-            return;
-        }
-
-        let group = data.get_group(&request_path[1].to_string());
-        if group.is_none() {
-            respond_not_found(stream);
-            return;
-        }
-
-        let was_deleted = data.delete_group(&request_path[2]);
-        if was_deleted {
-            respond_deleted_successfully(stream);
-            return;
-        }
+    if request_path.len() < 2 {
+        respond_unsuported_command(stream);
+        return;
     }
 
-    respond_not_found(stream);
+    let was_deleted = if request_path[0] == "users" {data.delete_user(&request_path[1])}
+    else if request_path[0] == "groups" {data.delete_group(&request_path[2])}
+    else {false};
+
+    if was_deleted {
+        respond_deleted_successfully(stream)
+    } else {
+        respond_not_found(stream);
+    }
 }
