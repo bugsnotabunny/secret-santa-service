@@ -19,7 +19,7 @@ impl Group{
         self.users_hashmap.insert(login.to_string(), eng_user);
     }
     
-    fn exit(&mut self, eng_user: EngroupedUser){
+    pub fn exit(&mut self, eng_user: EngroupedUser){
         let login: &String = eng_user.get_login();
         let opt: Option<EngroupedUser> = self.users_hashmap.remove(login);
     }
