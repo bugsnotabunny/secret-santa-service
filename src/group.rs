@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, ptr::null};
+use std::{collections::HashMap};
 
 use crate::engrouped_user::EngroupedUser;
 
@@ -24,7 +24,10 @@ impl Group{
     }
     
     pub fn exit(&mut self, login: &String){
-        self.users.remove(login);
+        let admins:HashMap<&String, &EngroupedUser> = self.get_admins();
+        if !admins.contains_key(login){
+            self.users.remove(login);
+        }
     }
 
     pub fn get_admins(&self) -> HashMap<&String, &EngroupedUser>{
