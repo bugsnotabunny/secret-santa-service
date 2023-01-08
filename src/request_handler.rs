@@ -128,9 +128,7 @@ fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &Vec<St
     respond_not_found(stream)
 }
 
-fn handle_post_request() {
-    
-}
+fn handle_post_request() {}
 
 fn handle_delete_request(
     stream: &TcpStream,
