@@ -7,7 +7,7 @@ pub struct EngroupedUser {
 }
 impl EngroupedUser {
     pub fn new(is_admin_: bool) -> EngroupedUser{
-        let recivers_login_ = String::from("");
+        let recivers_login_ = String::new();
         EngroupedUser {is_admin: is_admin_, receivers_login: recivers_login_}
     }
     pub fn get_is_admin(&self) -> bool{

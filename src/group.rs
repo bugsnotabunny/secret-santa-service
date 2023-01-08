@@ -14,11 +14,8 @@ impl Group{
         Group {users: HashMap::new()}
     }
 
-    pub fn entry(&mut self, login: String){
-        let mut is_admin_: bool = false;
-        if self.users.is_empty(){
-            is_admin_ = true;
-        }
+    pub fn entry(&mut self, login: &str){
+        let is_admin_ = self.users.is_empty();
         let eng_user =  EngroupedUser::new(is_admin_);
         self.users.insert(login.to_string(), eng_user);
     }
