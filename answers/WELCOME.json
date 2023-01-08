@@ -28,6 +28,6 @@
         {
             "action": "DELETE /groups/id",
             "reaction": "Deletes selected group (you can only delete groups you are admin at)"
-        },
+        }
     ]
 }

@@ -128,7 +128,9 @@ fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &Vec<St
     respond_not_found(stream)
 }
 
-fn handle_post_request() {}
+fn handle_post_request() {
+    
+}
 
 fn handle_delete_request(
     stream: &TcpStream,
@@ -148,7 +150,7 @@ fn handle_delete_request(
     }
 
     let was_deleted = if request_path[0] == "users" {
-        data.delete_user(&request_path[1])
+        data.delete_user(&request_path[2])
     } else if request_path[0] == "groups" {
         data.delete_group(&request_path[2])
     } else {
