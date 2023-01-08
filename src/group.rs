@@ -1,3 +1,5 @@
+use rand::seq::SliceRandom;
+use rand::thread_rng;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
@@ -42,5 +44,24 @@ impl Group {
 
     pub fn get_all_users(&self) -> &HashMap<String, EngroupedUser> {
         return &self.users;
+    }
+
+    pub fn shuffle_santas(&mut self) {
+        if self.users.capacity() > 1 {
+            let mut users_vec = Vec::new();
+            for login in self.users.keys() {
+                users_vec.push(login.clone());
+            }
+            users_vec.shuffle(&mut thread_rng());
+            for (login, user) in self.users.iter_mut() {
+                if users_vec[0] != *login {
+                    user.set_receiver(&users_vec[0]);
+                    users_vec.remove(0);
+                } else {
+                    user.set_receiver(&users_vec[1]);
+                    users_vec.remove(1);
+                }
+            }
+        }
     }
 }

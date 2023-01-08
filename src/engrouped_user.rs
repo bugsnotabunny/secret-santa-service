@@ -5,6 +5,7 @@ pub struct EngroupedUser {
     is_admin: bool,
     receivers_login: String,
 }
+
 impl EngroupedUser {
     pub fn new(is_admin_: bool) -> EngroupedUser {
         let recivers_login_ = String::new();
@@ -13,6 +14,7 @@ impl EngroupedUser {
             receivers_login: recivers_login_,
         }
     }
+
     pub fn get_is_admin(&self) -> bool {
         self.is_admin
     }
@@ -23,5 +25,9 @@ impl EngroupedUser {
 
     pub fn set_is_admin(&mut self, is_admin_: bool) {
         self.is_admin = is_admin_;
+    }
+
+    pub fn set_receiver(&mut self, user_login: &String) {
+        self.receivers_login = user_login.clone();
     }
 }
