@@ -1,20 +1,27 @@
-use serde::{Deserialize, Serialize};
+use serde::ser::{Serialize,Serializer,SerializeStruct};
 
-#[derive(Serialize, Deserialize)]
 pub struct User {
-    login: String,
     password: String,
-    nickname: String,
+}
+
+impl Serialize for User {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let s = serializer.serialize_struct("User", 0)?;
+        s.end()
+    }
 }
 
 impl User {
-    pub fn get_login(&self) -> &String {
-        &self.login
+    pub fn new(password: &str) -> Self {
+        User {
+            password: password.to_string(),
+        }
     }
+
     pub fn get_password(&self) -> &String {
         &self.password
-    }
-    pub fn get_nickname(&self) -> &String {
-        &self.nickname
     }
 }

@@ -16,6 +16,7 @@ pub mod json_msg_path {
     pub static UNSUPORTED_COMMAND: &str = "answers/UNSUPORTED_COMMAND.json";
     pub static DELETED_SUCCESSFULLY: &str = "answers/DELETED_SUCCESSFULLY.json";
     pub static WELCOME: &str = "answers/WELCOME.json";
+    pub static REGISTERED_SUCCESSFULLY: &str = "answers/REGISTERED_SUCCESSFULLY.json";
 }
 
 pub mod response {

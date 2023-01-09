@@ -2,17 +2,24 @@
 
 ADRESS="127.0.0.1:7878"
 
-echo "expected welcome message; got:"
-curl $ADRESS
-echo
+curl -X POST -H "Authorization: basic bugsnotabunny 1234" $ADRESS/register
+curl -X POST -H "Authorization: basic katkek 1234" $ADRESS/register
+curl -X POST -H "Authorization: basic banan 1234" $ADRESS/register
 
-echo "expected 2 empty lists; got:"
-curl $ADRESS/users
+curl -X POST -H "Authorization: basic bugsnotabunny 1234" $ADRESS/join/aboboa
+curl -X POST -H "Authorization: basic banan 1234" $ADRESS/join/aboboa
+curl -X POST -H "Authorization: basic katkek 1234" $ADRESS/join/aboboa
+
+curl -X POST -H "Authorization: basic bugsnotabunny 1234" $ADRESS/groups/aboboa/makeadmin/katkek
+curl -X POST -H "Authorization: basic bugsnotabunny 1234" $ADRESS/groups/aboboa/assignsantas
+
 curl $ADRESS/groups
 echo
-
-echo "expected 3 404 messages; got:"
-curl $ADRESS/g
-curl $ADRESS/groups/a
-curl $ADRESS/users/a
+curl $ADRESS/users
+echo
+curl -H "Authorization: basic bugsnotabunny 1234" $ADRESS/groups/aboboa/santafor
+echo
+curl -H "Authorization: basic katkek 1234" $ADRESS/groups/aboboa/santafor
+echo
+curl -H "Authorization: basic banan 1234" $ADRESS/groups/aboboa/santafor
 echo

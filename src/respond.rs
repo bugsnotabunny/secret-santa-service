@@ -10,7 +10,7 @@ pub fn respond_not_allowed(stream: &TcpStream) {
         stream,
         &response::gen_response(
             status::METHOD_NOT_ALLOWED,
-            fs::read_to_string(json_msg_path::UNSUPORTED_STANDARD)
+            fs::read_to_string(json_msg_path::UNSUPORTED_COMMAND)
                 .unwrap()
                 .as_str(),
         ),
@@ -78,6 +78,23 @@ pub fn respond_invalid_credentials(stream: &TcpStream) {
 pub fn respond_deleted_successfully(stream: &TcpStream) {
     respond(
         stream,
-        &response::gen_response(status::OK, json_msg_path::DELETED_SUCCESSFULLY),
+        &response::gen_response(
+            status::OK,
+            fs::read_to_string(json_msg_path::DELETED_SUCCESSFULLY)
+                .unwrap()
+                .as_str(),
+        ),
+    )
+}
+
+pub fn respond_registered_successfully(stream: &TcpStream) {
+    respond(
+        stream,
+        &response::gen_response(
+            status::OK,
+            fs::read_to_string(json_msg_path::REGISTERED_SUCCESSFULLY)
+                .unwrap()
+                .as_str(),
+        ),
     )
 }
