@@ -83,7 +83,7 @@ impl Group {
                     user.set_receiver(&users_vec[0]);
                     users_vec.remove(0);
                 } else {
-                    user.set_receiver(&users_vec[1я]);
+                    user.set_receiver(&users_vec[1]);
                     users_vec.remove(1);
                 }
             }

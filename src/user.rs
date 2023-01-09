@@ -1,4 +1,4 @@
-use serde::ser::{Serialize,Serializer,SerializeStruct};
+use serde::ser::{Serialize, SerializeStruct, Serializer};
 
 pub struct User {
     password: String,

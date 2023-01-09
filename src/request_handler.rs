@@ -85,7 +85,12 @@ fn login_user<'a>(http_request: &[String], data: &'a Data) -> Option<(&'a String
     data.login(credentials)
 }
 
-fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &[String], http_request: &[String]) {
+fn handle_get_request(
+    stream: &TcpStream,
+    data: &mut Data,
+    request_path: &[String],
+    http_request: &[String],
+) {
     if request_path[0] == "users" {
         if request_path.len() < 2 {
             let users = data.get_users();
@@ -118,7 +123,7 @@ fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &[Strin
 
         let group_wrapped = data.get_group(&request_path[1].to_string());
         if let Some(group) = group_wrapped {
-            if request_path.len() > 2{
+            if request_path.len() > 2 {
                 if request_path[2] == "santafor" {
                     let user_wrapped = login_user(http_request, data);
                     if user_wrapped.is_none() {
@@ -132,8 +137,12 @@ fn handle_get_request(stream: &TcpStream, data: &mut Data, request_path: &[Strin
                         return;
                     }
                     let recievers_login = eng_user.unwrap().get_recievers_login();
-                    let recievers_login_json = "{\"santa_for\":\"".to_string() + recievers_login + "\"}";
-                    respond(stream, &response::gen_response(status::OK, recievers_login_json.as_str()));
+                    let recievers_login_json =
+                        "{\"santa_for\":\"".to_string() + recievers_login + "\"}";
+                    respond(
+                        stream,
+                        &response::gen_response(status::OK, recievers_login_json.as_str()),
+                    );
                     return;
                 }
                 respond_not_found(stream);
