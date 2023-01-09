@@ -72,20 +72,22 @@ impl Group {
     }
 
     pub fn shuffle_santas(&mut self) {
-        if self.users.capacity() > 1 {
-            let mut users_vec = Vec::new();
-            for login in self.users.keys() {
-                users_vec.push(login.clone());
-            }
-            users_vec.shuffle(&mut thread_rng());
-            for (login, user) in self.users.iter_mut() {
-                if users_vec[0] != *login {
-                    user.set_receiver(&users_vec[0]);
-                    users_vec.remove(0);
-                } else {
-                    user.set_receiver(&users_vec[1]);
-                    users_vec.remove(1);
-                }
+        if self.users.capacity() < 2 {
+            return;
+        }
+
+        let mut users_vec = Vec::new();
+        for login in self.users.keys() {
+            users_vec.push(login.clone());
+        }
+        users_vec.shuffle(&mut thread_rng());
+        for (login, user) in self.users.iter_mut() {
+            if users_vec[0] != *login {
+                user.set_receiver(&users_vec[0]);
+                users_vec.remove(0);
+            } else {
+                user.set_receiver(&users_vec[1]);
+                users_vec.remove(1);
             }
         }
     }
