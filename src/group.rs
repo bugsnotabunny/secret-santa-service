@@ -82,12 +82,12 @@ impl Group {
         }
         users_vec.shuffle(&mut thread_rng());
         for (login, user) in self.users.iter_mut() {
-            if users_vec[0] != *login {
-                user.set_receiver(&users_vec[0]);
-                users_vec.remove(0);
-            } else {
+            if users_vec.len() > 1 && users_vec[1] != *login {
                 user.set_receiver(&users_vec[1]);
                 users_vec.remove(1);
+            } else {
+                user.set_receiver(&users_vec[0]);
+                users_vec.remove(0);
             }
         }
     }
